@@ -1,0 +1,17 @@
+.body{
+    background-color: #efefef;
+}
+
+.main{
+    margin: 30px;
+    background-color: white;
+}
+
+.btn-publish {
+    float: right;
+    margin-bottom: 15px;
+}
+
+.textarea-height{
+    height: 400px;
+}
