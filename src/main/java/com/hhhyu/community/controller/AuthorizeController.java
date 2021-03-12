@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.UUID;
 
@@ -49,30 +48,39 @@ public class AuthorizeController {
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSec);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
-        //System.out.println(accessToken);
-        //System.out.println("12345");
         GithubUser githubUser = githubProvider.getUser(accessToken);
         System.out.println(githubUser);
         if(githubUser != null){
-            // && githubUser.getId() != 0
             //登录成功
-            System.out.println(githubUser.getId());
-            User user = new User();
-            String token = UUID.randomUUID().toString();
-            user.setToken(token);
-            user.setName(githubUser.getName());
-            user.setAccountId(String.valueOf(githubUser.getId()));
-            user.setGmtCreate(new Date(System.currentTimeMillis()));
-            user.setGmtModified(user.getGmtCreate());
-            userMapper.insert(user);
+            long accountId = githubUser.getId();
+            System.out.println(accountId);
+            User user;
+            String token;
+            if((user = userMapper.findMyAccountId(String.valueOf(accountId))) != null){
+                token = user.getToken();
+                user.setGmtModified(new Date(System.currentTimeMillis()));
+//                System.out.println("My Git name is:"+ githubUser.getName());
+                user.setName(githubUser.getName());
+//                System.out.println("My database name is:"+ user.getName());
+                user.setAccountId(String.valueOf(accountId));
+                userMapper.updata(user);
+            }
+            else {
+                user = new User();
+                user.setAccountId(String.valueOf(accountId));
+                user.setName(githubUser.getName());
+                token = UUID.randomUUID().toString();
+                user.setToken(token);
+                user.setGmtCreate(new Date(System.currentTimeMillis()));
+                user.setGmtModified(user.getGmtCreate());
+                userMapper.insert(user);
+            }
             response.addCookie(new Cookie("token", token));
             return "redirect:/";
         }else {
             //登录失败
             return "redirect:/";
         }
-//        System.out.println(user.getName());
-//        System.out.println(user.getId());
     }
 
 }
