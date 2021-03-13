@@ -41,19 +41,6 @@ public class PublishController {
         model.addAttribute("description", description);
         model.addAttribute("tag", tag);
         //System.out.println("title:" + title);
-        if(title == null || title == ""){
-            model.addAttribute("error", "标题不能为空");
-            return "publish";
-        }
-        if(description == null || description ==""){
-            model.addAttribute("error", "描述不能为空");
-            return "publish";
-        }
-        if(tag == null || tag == ""){
-            model.addAttribute("error", "标签不能为空");
-            return "publish";
-        }
-
         User user = null;
         Cookie[] cookies = request.getCookies();
         if(cookies != null) {
@@ -68,8 +55,22 @@ public class PublishController {
                 }
             }
         }
+
         if(user == null){
             model.addAttribute("error", "用户未登录");
+            return "publish";
+        }
+
+        if(title == null || title == ""){
+            model.addAttribute("error", "标题不能为空");
+            return "publish";
+        }
+        if(description == null || description ==""){
+            model.addAttribute("error", "描述不能为空");
+            return "publish";
+        }
+        if(tag == null || tag == ""){
+            model.addAttribute("error", "标签不能为空");
             return "publish";
         }
 

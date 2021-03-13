@@ -50,26 +50,28 @@ public class AuthorizeController {
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUser(accessToken);
         System.out.println(githubUser);
-        if(githubUser != null){
+        if(githubUser != null && githubUser.getId() != null){
             //登录成功
-            long accountId = githubUser.getId();
-            System.out.println(accountId);
+            Long accountId = githubUser.getId();
+//            System.out.println(accountId);
             User user;
-            String token;
+            String token = UUID.randomUUID().toString();
+            //登录的时候，查看这个用户是否已经保存过了，保存过了就更新信息，不再添加一个新用户，因为accountId（user的key）是一样的
             if((user = userMapper.findMyAccountId(String.valueOf(accountId))) != null){
-                token = user.getToken();
+                System.out.println(user);
+                user.setAvatarUrl(githubUser.getAvatar_url());
                 user.setGmtModified(new Date(System.currentTimeMillis()));
-//                System.out.println("My Git name is:"+ githubUser.getName());
+                user.setToken(token);
                 user.setName(githubUser.getName());
-//                System.out.println("My database name is:"+ user.getName());
-                user.setAccountId(String.valueOf(accountId));
-                userMapper.updata(user);
+                int success = userMapper.update(user);
+                System.out.println(success);
             }
             else {
                 user = new User();
+
+                user.setAvatarUrl(githubUser.getAvatar_url());
                 user.setAccountId(String.valueOf(accountId));
                 user.setName(githubUser.getName());
-                token = UUID.randomUUID().toString();
                 user.setToken(token);
                 user.setGmtCreate(new Date(System.currentTimeMillis()));
                 user.setGmtModified(user.getGmtCreate());

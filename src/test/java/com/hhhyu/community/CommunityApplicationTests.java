@@ -1,8 +1,6 @@
 package com.hhhyu.community;
 
 import com.hhhyu.community.mapper.UserMapper;
-import com.hhhyu.community.model.User;
-import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -13,9 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.PortUnreachableException;
-import java.util.Random;
-
 @SpringBootTest
 class CommunityApplicationTests {
 
