@@ -1,5 +1,6 @@
 package com.hhhyu.community.controller;
 
+import com.hhhyu.community.dto.PaginationDTO;
 import com.hhhyu.community.dto.QuestionDTO;
 import com.hhhyu.community.mapper.QuestionMapper;
 import com.hhhyu.community.mapper.UserMapper;
@@ -28,7 +29,9 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(HttpServletRequest request,
-                        Model model){
+                        Model model,
+                        @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                        @RequestParam(name = "pageSize", defaultValue = "5") Integer pageSize){
         Cookie[] cookies = request.getCookies();
         //直接用cookie登录，没有关闭页面则不用再授权一次
         if(cookies != null && cookies.length > 0) {
@@ -43,8 +46,8 @@ public class IndexController {
                 }
             }
         }
-        List<QuestionDTO> list = questionService.list();
-        model.addAttribute("questions", list);
+        PaginationDTO pagination = questionService.list(pageNo, pageSize);
+        model.addAttribute("pagination", pagination);
         return "index";
     }
 

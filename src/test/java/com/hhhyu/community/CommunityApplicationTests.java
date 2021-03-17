@@ -13,9 +13,52 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 @SpringBootTest
 class CommunityApplicationTests {
-
+    public Integer lock = 19;
     @Autowired
     UserMapper userMapper;
+
+
+    class ThreadA extends Thread{
+        private int i = 50;
+        ThreadB threadB = new ThreadB();
+        @Override
+        public void run() {
+            threadB.setName("Thread B");
+            synchronized (threadB) {
+                threadB.start();
+                while (i > 0) {
+                    System.out.println("This is:" + Thread.currentThread().getName());
+                    /*try {
+                        threadB.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }*/
+                    i--;
+                }
+            }
+        }
+    }
+
+    class ThreadB extends Thread{
+        private int count = 50;
+        @Override
+        public void run() {
+            synchronized (this) {
+                while (count > 0) {
+                    System.out.println("This is:" + Thread.currentThread().getName());
+                    count--;
+                }
+            }
+        }
+    }
+
+    @Test
+    void ThreadTest(){
+        ThreadA threadA = new ThreadA();
+        threadA.setName("Thread A");
+        threadA.start();
+
+    }
 
 
     @Test
